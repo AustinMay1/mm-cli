@@ -1,4 +1,5 @@
 use serde::{Serialize, Deserialize};
+use std::collections::HashMap;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Data {
@@ -16,20 +17,36 @@ pub struct Players {
     pub data: Data,
 }
 
-pub const BOSSES: [&str; 58] = ["abyssal_sire", "alchemical_hydra", "artio", "barrows_chests", "bryophyta", "callisto", "calvarion", "cerberus", "chambers_of_xeric", "chambers_of_xeric_challenge_mode", "chaos_elemental", "chaos_fanatic", "commander_zilyana", "corporeal_beast", "crazy_archaeologist", "dagannoth_prime", "dagannoth_rex", "dagannoth_supreme", "deranged_archaeologist", "duke_sucellus", "general_graardor", "giant_mole", "grotesque_guardians", "hespori", "kalphite_queen", "king_black_dragon", "kraken", "kreearra", "kril_tsutsaroth", "mimic", "nex", "nightmare", "phosanis_nightmare", "obor", "phantom_muspah", "sarachnis", "scorpia", "skotizo", "spindel", "tempoross", "the_gauntlet", "the_corrupted_gauntlet", "the_leviathan", "the_whisperer", "theatre_of_blood", "theatre_of_blood_hard_mode", "thermonuclear_smoke_devil", "tombs_of_amascut", "tombs_of_amascut_expert", "tzkal_zuk", "tztok_jad", "vardorvis", "venenatis", "vetion", "vorkath", "wintertodt", "zalcano", "zulrah"];
-
 impl Players {
-    pub async fn get_totals(url: &str) -> Result<u32, Box<dyn std::error::Error>> {
+    async fn get_boss_totals(url: String) -> Result<u32, Box<dyn std::error::Error>> {
         let mut total: u32 = 0;
-        let res: Vec<Players> = reqwest::get(url)
+        let players: Vec<Self> = reqwest::get(url)
             .await?
             .json()
             .await?;
 
-        for gain in 0..res.len() {
-            total += res[gain].data.gained;
+        for player in players.iter() {
+            total += player.data.gained;
         }
 
         Ok(total)
+    }
+
+    pub async fn get_totals(base_url: &str, bosses: &[&'static str]) -> Result<HashMap<&'static str, u32>, Box<dyn std::error::Error>> {
+        let mut overall_total: u32 = 0;
+        let mut url: String;
+        let mut boss_total: u32;
+        let mut totals = HashMap::new();
+
+        for boss in bosses.iter() {
+            url = String::from(base_url.to_owned() + boss + "&period=week");
+            boss_total = Self::get_boss_totals(url).await?;
+            totals.insert(*boss, boss_total);
+            overall_total += boss_total;
+            println!("{:?} = {}", boss, boss_total);
+        }
+        println!("Overall: {}", overall_total);
+
+        Ok(totals)
     }
 }
