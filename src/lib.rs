@@ -1,5 +1,4 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Data {
@@ -28,22 +27,22 @@ impl Players {
 
         Ok(total)
     }
-    
+
     pub async fn get_totals(
         base_url: &str,
-        bosses: &[&'static str],
-    ) -> Result<HashMap<&'static str, u32>, Box<dyn std::error::Error>> {
+        bosses: &[(&'static str, &'static str)],
+    ) -> Result<Vec<(&'static str, u32)>, Box<dyn std::error::Error>> {
         let mut overall_total: u32 = 0;
         let mut url: String;
         let mut boss_total: u32;
-        let mut totals = HashMap::new();
+        let mut totals = Vec::<(&'static str, u32)>::new();
 
-        for boss in bosses {
-            url = format!("{}{}&period=week", base_url, boss);
+        for (key, _) in bosses {
+            url = format!("{}{}&period=week", base_url, key);
             boss_total = Self::get_boss_totals(&url).await?;
-            totals.insert(*boss, boss_total);
+            totals.push((*key, boss_total));
             overall_total += boss_total;
-            println!("{:?} = {}", boss, boss_total);
+            println!("{:?} = {}", key, boss_total);
         }
         println!("Overall: {}", overall_total);
 

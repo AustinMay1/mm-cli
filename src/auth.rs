@@ -4,8 +4,8 @@ use google_sheets4::{hyper, hyper_rustls};
 use crate::configs::Config;
 
 pub async fn auth(
-    config: &Config, 
-    client: hyper::Client<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>>
+    config: &Config,
+    client: hyper::Client<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>>,
 ) -> Authenticator<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>> {
     let secret: oauth2::ServiceAccountKey = oauth2::read_service_account_key(&config.priv_key)
         .await

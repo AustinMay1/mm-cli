@@ -1,15 +1,17 @@
-use google_sheets4::{api::ValueRange, api::UpdateValuesResponse ,hyper, hyper_rustls, Error, Sheets};
+use google_sheets4::{
+    api::UpdateValuesResponse, api::ValueRange, hyper, hyper_rustls, Error, Sheets,
+};
 
 use crate::configs::Config;
 
+#[allow(dead_code)]
 pub async fn read(
     hub: &Sheets<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>>,
-    config: &Config
+    config: &Config,
+    output_range: &str,
 ) -> Result<(hyper::Response<hyper::Body>, ValueRange), Error> {
-
-    hub
-        .spreadsheets()
-        .values_get(&config.sheet_id, &config.output_range)
+    hub.spreadsheets()
+        .values_get(&config.sheet_id, output_range)
         .doit()
         .await
 }
@@ -17,15 +19,13 @@ pub async fn read(
 pub async fn write(
     hub: &Sheets<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>>,
     config: &Config,
-    vals: ValueRange
+    input_range: &str,
+    vals: ValueRange,
 ) -> Result<(hyper::Response<hyper::Body>, UpdateValuesResponse), Error> {
-
-    hub
-        .spreadsheets()
-        .values_update(vals, &config.sheet_id, &config.input_range)
+    hub.spreadsheets()
+        .values_update(vals, &config.sheet_id, input_range)
         .value_input_option("RAW")
         .include_values_in_response(true)
         .doit()
         .await
-
 }
