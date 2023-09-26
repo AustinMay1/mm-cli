@@ -1,4 +1,4 @@
-pub mod constants {
+pub mod consts {
 
     pub const BOSSES: [(&str, &str); 58] = [
         ("abyssal_sire", "B3"),
