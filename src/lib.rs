@@ -1,5 +1,5 @@
-use serde::{Deserialize, Serialize};
 use chrono::prelude::*;
+use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Data {
@@ -33,7 +33,7 @@ impl Players {
         base_url: &str,
         bosses: &[(&'static str, &'static str)],
         date_from: &DateTime<chrono::Utc>,
-        date_to: &DateTime<chrono::Utc>
+        date_to: &DateTime<chrono::Utc>,
     ) -> Result<Vec<(&'static str, u32)>, Box<dyn std::error::Error>> {
         let mut overall_total: u32 = 0;
         let mut url: String;
@@ -41,7 +41,10 @@ impl Players {
         let mut totals = Vec::<(&'static str, u32)>::new();
 
         for (key, _) in bosses {
-            url = format!("{}{}&startDate={:?}&endDate={:?}", base_url, key, date_from, date_to);
+            url = format!(
+                "{}{}&startDate={:?}&endDate={:?}",
+                base_url, key, date_from, date_to
+            );
             boss_total = Self::get_boss_totals(&url).await?;
             totals.push((*key, boss_total));
             overall_total += boss_total;
@@ -54,8 +57,8 @@ impl Players {
 }
 
 pub fn process_args(arg: &String) -> Option<DateTime<chrono::Utc>> {
-    if arg.len() < 7 {
-        panic!("Invalid date")
+    if arg.len() < 7 || arg.len() > 7 {
+        panic!("[ERROR]: Invalid from/to date. Please use format YYYYMMDD.")
     }
 
     let year: i32 = arg[0..=3].parse().unwrap();
@@ -64,8 +67,8 @@ pub fn process_args(arg: &String) -> Option<DateTime<chrono::Utc>> {
 
     let dt = NaiveDate::from_ymd_opt(year, month, day)?
         .and_hms_milli_opt(0, 0, 0, 0)?
-        .and_local_timezone(Utc).unwrap();
-
+        .and_local_timezone(Utc)
+        .unwrap();
 
     Some(dt)
 }

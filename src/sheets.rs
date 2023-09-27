@@ -19,18 +19,18 @@ pub async fn read(
 pub async fn write(
     hub: &Sheets<hyper_rustls::HttpsConnector<hyper::client::HttpConnector>>,
     config: &Config,
-    cell_range: &String,
+    cell_range: &str,
     vals: serde_json::Value,
 ) -> Result<(hyper::Response<hyper::Body>, UpdateValuesResponse), Error> {
     hub.spreadsheets()
         .values_update(
             ValueRange {
                 major_dimension: Some(String::from("ROWS")),
-                range: Some(cell_range.clone()),
+                range: Some(cell_range.to_owned()),
                 values: Some(vec![vec![vals]]),
             },
             &config.sheet_id,
-            &cell_range
+            cell_range,
         )
         .value_input_option("RAW")
         .include_values_in_response(true)

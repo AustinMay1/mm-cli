@@ -1,8 +1,8 @@
 use crate::constants::consts::*;
-use google_sheets4::Sheets;
-use monstermash::{Players, process_args};
-use serde_json::json;
 use clap::Parser;
+use google_sheets4::Sheets;
+use monstermash::{process_args, Players};
+use serde_json::json;
 
 mod auth;
 mod client;
@@ -39,13 +39,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             if &boss == key {
                 let cell_range = format!("Sheet1!{}", cell);
 
-                let req = sheets::write(
-                    &hub,
-                    &config,
-                    &cell_range,
-                    json!(val),
-                )
-                .await;
+                let req = sheets::write(&hub, &config, &cell_range, json!(val)).await;
 
                 match req {
                     Err(e) => println!("{}", e),
