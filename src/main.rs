@@ -18,6 +18,9 @@ struct Args {
 
     #[arg(short, long)]
     to: String,
+
+    #[arg(short, long)]
+    leagues: bool,
 }
 
 #[tokio::main]
@@ -25,7 +28,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let date_from = process_args(&args.from).unwrap();
     let date_to = process_args(&args.to).unwrap();
-    let total = Players::get_totals(BASE_URL, &BOSSES, &date_from, &date_to).await?;
+    let total: Vec<(&str, u32)>;
+
+    if args.leagues {
+        total = Players::get_totals(BASE_URL_LEAGUES, &BOSSES, &date_from, &date_to).await?;
+    } else {
+        total = Players::get_totals(BASE_URL, &BOSSES, &date_from, &date_to).await?;
+    }
+
     let config = configs::Config::new();
     let client = client::http_client();
     let auth = auth::auth(&config, client.clone()).await;
@@ -37,7 +47,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     for (boss, cell) in BOSSES {
         for (key, val) in &total {
             if &boss == key {
-                let cell_range = format!("Sheet1!{}", cell);
+                let cell_range = format!("WOM Calcs!{}", cell);
 
                 let req = sheets::write(&hub, &config, &cell_range, json!(val)).await;
 

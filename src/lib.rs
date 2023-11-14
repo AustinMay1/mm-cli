@@ -39,7 +39,7 @@ impl Players {
         let mut url: String;
         let mut boss_total: u32;
         let mut totals = Vec::<(&'static str, u32)>::new();
-
+        
         for (key, _) in bosses {
             url = format!(
                 "{}{}&startDate={:?}&endDate={:?}",
@@ -57,16 +57,18 @@ impl Players {
 }
 
 pub fn process_args(arg: &String) -> Option<DateTime<chrono::Utc>> {
-    if arg.len() < 7 || arg.len() > 7 {
+    if arg.len() < 12 || arg.len() > 12 {
         panic!("[ERROR]: Invalid from/to date. Please use format YYYYMMDD.")
     }
 
     let year: i32 = arg[0..=3].parse().unwrap();
     let month: u32 = arg[4..=5].parse().unwrap();
     let day: u32 = arg[6..=7].parse().unwrap();
+    let hour: u32 = arg[8..=9].parse().unwrap();
+    let min: u32 = arg[10..=11].parse().unwrap();
 
     let dt = NaiveDate::from_ymd_opt(year, month, day)?
-        .and_hms_milli_opt(0, 0, 0, 0)?
+        .and_hms_milli_opt(hour, min, 0, 0)?
         .and_local_timezone(Utc)
         .unwrap();
 

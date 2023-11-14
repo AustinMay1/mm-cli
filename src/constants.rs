@@ -62,4 +62,5 @@ pub mod consts {
     ];
 
     pub const BASE_URL: &str = "https://api.wiseoldman.net/v2/groups/1500/gained?metric=";
+    pub const BASE_URL_LEAGUES: &str = "https://api.wiseoldman.net/league/groups/1500/gained?metric=";
 }
