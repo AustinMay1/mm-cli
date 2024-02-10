@@ -1,5 +1,7 @@
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::thread;
+use std::time::Duration;
 
 #[derive(Deserialize, Serialize, Debug)]
 pub struct Data {
@@ -25,7 +27,8 @@ impl Players {
         for player in players {
             total += player.data.gained;
         }
-
+        
+        thread::sleep(Duration::from_millis(12000 as u64));
         Ok(total)
     }
 
