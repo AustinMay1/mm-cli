@@ -1,6 +1,6 @@
 pub mod consts {
 
-    pub const BOSSES: [(&str, &str); 59] = [
+    pub const BOSSES: [(&str, &str); 61] = [
         ("abyssal_sire", "B3"),
         ("alchemical_hydra", "C3"),
         ("artio", "D3"),
@@ -60,6 +60,8 @@ pub mod consts {
         ("zalcano", "C13"),
         ("zulrah", "D13"),
         ("scurrius", "B15"),
+        ("sol_heredit", "D15"), 
+        ("lunar_chests", "C15"),
     ];
 
     pub const BASE_URL: &str = "https://api.wiseoldman.net/v2/groups/1500/gained?metric=";
